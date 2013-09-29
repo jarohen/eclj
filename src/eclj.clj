@@ -57,6 +57,10 @@
                  (catch Exception e
                    (throw+ {:error e :line line})))))))))))
 
+(defn make-safe [s]
+  ;; we ensure that any #= simply executes a form that returns "#="
+  (s/replace s #"#=" "#=\"#=\""))
+
 (comment
   (eval-eclj (s/join "\n"
                      [""
