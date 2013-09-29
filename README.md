@@ -8,7 +8,9 @@ it in any production systems!
 
 ## Usage
 
-**There is currently no deployment of eCLJ on Clojars.**
+There is currently only a snapshot release of eCLJ on Clojars:
+
+    [jarohen/eclj "0.0.1-SNAPSHOT"]
 
 I intend to release an early version soon. At the moment, though, you
 can still try eCLJ out at the REPL by cloning this repo and evaluating
