@@ -1,6 +1,6 @@
 (ns eclj
   (:require [clojure.string :as s]
-            [slingshot.slingshot :refer [throw+]]))
+            [slingshot.slingshot :refer [try+ throw+]]))
 
 (defn has-more? [r]
   (.mark r 1)
@@ -61,10 +61,32 @@
   ;; we ensure that any #= simply executes a form that returns "#="
   (s/replace s #"#=" "#=\"#=\""))
 
+
+
+;; -------------------- TESTS --------------------
+
 (comment
-  (eval-eclj (s/join "\n"
-                     [""
-                      "#=(str first-name \" \" last-name) says that, "
-                      "at '#=(str (java.util.Date.))', "
-                      "it's probably time for a coffee!"])
+  (let [template (s/join "\n"
+                         [""
+                          "#=(str first-name \" \" last-name) says that, "
+                          "at '#=(str (java.util.Date.))', "
+                          "it's probably time for a coffee!"])]
+    (eval-eclj template {:first-name "Joe" :last-name "Bloggs"}))
+
+  (let [template (s/join "\n"
+                         [""
+                          "#=(str first-name \" \" last-name) says that, "
+                          ;; note the typo.
+                          "at '#=(sstr (java.util.Date.))', "
+                          "it's probably time for a coffee!"])]
+    (try+
+     (eval-eclj template {:first-name "Joe" :last-name "Bloggs"})
+     (catch Object {:keys [error line] :as m}
+         m)))
+
+  (eval-eclj (make-safe (s/join "\n"
+                                [""
+                                 "#=(str first-name \" \" last-name) says that, "
+                                 "at '#=(str (java.util.Date.))', "
+                                 "it's probably time for a coffee!"]))
              {:first-name "Joe" :last-name "Bloggs"}))
